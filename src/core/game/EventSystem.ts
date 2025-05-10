@@ -210,3 +210,41 @@ export class ResourceDiscoveryEffect extends BaseEventEffect {
     return true;
   }
 }
+
+export class RebellionEffect extends BaseEventEffect {
+  public apply(game: Game, player: Player, params?: any): boolean {
+    const rebellionSize = params?.rebellionSize || this.params.rebellionSize || 0.2; // 20% du territoire
+    const troopsLost = params?.troopsLost || this.params.troopsLost || 0.15; // 15% des troupes
+    
+    // Calculer le nombre de tuiles à perdre
+    const tilesToLoseCount = Math.floor(player.tiles().size * rebellionSize);
+    if (tilesToLoseCount <= 0) {
+      return false;
+    }
+    
+    // Obtenir des tuiles aléatoires
+    const tilesToLose = this.getRandomTiles(player, tilesToLoseCount);
+    
+    // Faire perdre les tuiles au joueur
+    for (const tile of tilesToLose) {
+      player.relinquish(tile);
+      // Les tuiles reviennent à terra nullius
+      game.terraNullius().conquer(tile);
+    }
+    
+    // Faire perdre des troupes
+    const troopsToLose = Math.floor(player.troops() * troopsLost);
+    if (troopsToLose > 0) {
+      player.removeTroops(troopsToLose);
+    }
+    
+    // Créer un message pour le joueur
+    game.displayMessage(
+      `Une rébellion a éclaté dans votre territoire! Vous avez perdu ${tilesToLoseCount} tuiles et ${troopsToLose} troupes.`,
+      MessageType.WARN,
+      player.id()
+    );
+    
+    return true;
+  }
+}

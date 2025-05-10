@@ -1,11 +1,11 @@
 import { simpleHash, toInt, withinInt } from "../Util";
 import {
+  AllParams,
   MessageType,
   Player,
   Tick,
   Unit,
   UnitInfo,
-  UnitSpecificInfos,
   UnitType,
 } from "./Game";
 import { GameImpl } from "./GameImpl";
@@ -37,7 +37,7 @@ export class UnitImpl implements Unit {
     private _troops: number,
     private _id: number,
     public _owner: PlayerImpl,
-    unitsSpecificInfos: UnitSpecificInfos = {},
+    unitsSpecificInfos: AllParams = {},
   ) {
     this._health = toInt(this.mg.unitInfo(_type).maxHealth ?? 1);
     this._lastTile = _tile;

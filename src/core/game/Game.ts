@@ -146,6 +146,71 @@ export enum UnitType {
   Construction = "Construction",
 }
 
+export interface UnitParamsMap {
+  [UnitType.TransportShip]: {
+    // Parameters for TransportShip
+  };
+
+  [UnitType.Warship]: {
+    // Parameters for Warship
+  };
+
+  [UnitType.Shell]: {
+    // Parameters for Shell
+  };
+
+  [UnitType.SAMMissile]: {
+    // Parameters for SAMMissile
+  };
+
+  [UnitType.Port]: {
+    // Parameters for Port
+  };
+
+  [UnitType.AtomBomb]: {
+    // Parameters for AtomBomb
+  };
+
+  [UnitType.HydrogenBomb]: {
+    // Parameters for HydrogenBomb
+  };
+
+  [UnitType.TradeShip]: {
+    // Parameters for TradeShip
+  };
+
+  [UnitType.MissileSilo]: {
+    // Parameters for MissileSilo
+  };
+
+  [UnitType.DefensePost]: {
+    // Parameters for DefensePost
+  };
+
+  [UnitType.SAMLauncher]: {
+    // Parameters for SAMLauncher
+  };
+
+  [UnitType.City]: {
+    // Parameters for City
+  };
+
+  [UnitType.MIRV]: {
+    // Parameters for MIRV
+  };
+
+  [UnitType.MIRVWarhead]: {
+    // Parameters for MIRVWarhead
+  };
+
+  [UnitType.Construction]: {
+    // Parameters for Construction
+  };
+}
+
+// Type helper to get params type for a specific unit type
+export type UnitParams<T extends UnitType> = UnitParamsMap[T];
+
 export const nukeTypes = [
   UnitType.AtomBomb,
   UnitType.HydrogenBomb,
@@ -275,7 +340,7 @@ export class PlayerInfo {
 }
 
 // Some units have info specific to them
-export interface UnitSpecificInfos {
+export interface AllParams {
   dstPort?: Unit; // Only for trade ships
   lastSetSafeFromPirates?: number; // Only for trade ships
   detonationDst?: TileRef; // Only for nukes
@@ -393,7 +458,7 @@ export interface Player {
     type: UnitType,
     troops: number,
     tile: TileRef,
-    unitSpecificInfos?: UnitSpecificInfos,
+    unitSpecificInfos?: AllParams,
   ): Unit;
   captureUnit(unit: Unit): void;
 

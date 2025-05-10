@@ -16,6 +16,7 @@ import { AttackImpl } from "./AttackImpl";
 import {
   Alliance,
   AllianceRequest,
+  AllParams,
   AllPlayers,
   Attack,
   BuildableUnit,
@@ -35,7 +36,6 @@ import {
   TerraNullius,
   Tick,
   Unit,
-  UnitSpecificInfos,
   UnitType,
 } from "./Game";
 import { GameImpl } from "./GameImpl";
@@ -707,7 +707,7 @@ export class PlayerImpl implements Player {
     type: UnitType,
     troops: number,
     spawnTile: TileRef,
-    unitSpecificInfos: UnitSpecificInfos = {},
+    unitSpecificInfos: AllParams = {},
   ): UnitImpl {
     if (this.mg.config().isUnitDisabled(type)) {
       throw new Error(

@@ -98,3 +98,115 @@ export abstract class BaseEventEffect implements EventEffect {
     // Prendre le nombre demandé ou toutes si count > tiles.length
     return tiles.slice(0, Math.min(count, tiles.length));
   }
+  
+  // Méthode utilitaire pour choisir des unités aléatoires
+  protected getRandomUnits(player: Player, count: number, types?: string[]): any[] {
+    let units = [];
+    
+    if (types && types.length > 0) {
+      units = types.flatMap(type => player.units(type));
+    } else {
+      // Obtenir toutes les unités
+      units = player.units();
+    }
+    
+    if (units.length === 0) {
+      return [];
+    }
+    
+    // Mélanger les unités
+    for (let i = units.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [units[i], units[j]] = [units[j], units[i]];
+    }
+    
+    // Prendre le nombre demandé ou toutes si count > units.length
+    return units.slice(0, Math.min(count, units.length));
+  }
+}
+
+// Implémentations d'effets d'événements
+export class NaturalDisasterEffect extends BaseEventEffect {
+  public apply(game: Game, player: Player, params?: any): boolean {
+    const disasterType = params?.disasterType || this.params.disasterType || "earthquake";
+    const affectedTilesCount = params?.affectedTilesCount || this.params.affectedTilesCount || 3;
+    
+    // Obtenir des tuiles aléatoires
+    const affectedTiles = this.getRandomTiles(player, affectedTilesCount);
+    if (affectedTiles.length === 0) {
+      return false;
+    }
+    
+    // Appliquer l'effet selon le type de catastrophe
+    switch (disasterType) {
+      case "earthquake":
+        // Détruire les bâtiments sur les tuiles affectées
+        for (const tile of affectedTiles) {
+          const units = player.units().filter(unit => unit.tile() === tile);
+          for (const unit of units) {
+            // Détruire uniquement les bâtiments, pas les unités mobiles
+            if (unit.info().territoryBound) {
+              unit.delete();
+            }
+          }
+        }
+        break;
+      case "flood":
+        // Réduire la production des tuiles affectées
+        // (à implémenter avec le système de ressources)
+        break;
+      case "drought":
+        // Réduire la production de nourriture
+        // (à implémenter avec le système de ressources)
+        break;
+      case "wildfire":
+        // Détruire certaines unités et réduire la production
+        for (const tile of affectedTiles) {
+          const units = player.units().filter(unit => unit.tile() === tile);
+          for (const unit of units) {
+            if (Math.random() < 0.5) { // 50% de chance de destruction
+              unit.delete();
+            }
+          }
+        }
+        break;
+      default:
+        // Type de catastrophe inconnu
+        return false;
+    }
+    
+    // Créer un message pour le joueur
+    game.displayMessage(
+      `Une catastrophe naturelle (${disasterType}) a frappé votre territoire!`,
+      MessageType.WARN,
+      player.id()
+    );
+    
+    return true;
+  }
+}
+
+export class ResourceDiscoveryEffect extends BaseEventEffect {
+  public apply(game: Game, player: Player, params?: any): boolean {
+    const resourceType = params?.resourceType || this.params.resourceType || ResourceType.Gold;
+    const amount = params?.amount || this.params.amount || 100;
+    
+    // Obtenir le gestionnaire de ressources du joueur
+    const resourceManager = (player as any).resources;
+    if (!resourceManager) {
+      return false;
+    }
+    
+    // Ajouter les ressources découvertes
+    resourceManager.addResource(resourceType, amount);
+    
+    // Créer un message pour le joueur
+    game.displayMessage(
+      `Vos explorateurs ont découvert un gisement de ${resourceType}!`,
+      MessageType.SUCCESS,
+      player.id()
+    );
+    
+    return true;
+  }
+}

@@ -3,8 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpenFront (ALPHA)</title>
+    <title>OpenFront - Stratégie Territoriale en Temps Réel</title>
     <link rel="manifest" href="../../resources/manifest.json" />
+    <meta name="description" content="OpenFront - Un jeu de stratégie en temps réel basé sur le contrôle territorial et la diplomatie. Formez des alliances et conquérez le monde!" />
 
     <!-- Critical CSS to prevent FOUC -->
     <style>
@@ -39,6 +40,7 @@
         height: 100%;
         filter: blur(4px);
         z-index: -1;
+        transition: filter 0.5s ease;
       }
 
       .dark .bg-image {
@@ -49,9 +51,7 @@
         position: fixed;
         left: 0;
         top: 200px;
-        /* Changed from top: 50% */
         transform: none;
-        /* Removed translateY(-50%) since we don't need to center anymore */
         z-index: 40;
         width: 300px;
         height: 600px;
@@ -71,9 +71,7 @@
         position: fixed;
         right: 0;
         top: 200px;
-        /* Changed from top: 50% */
         transform: none;
-        /* Removed translateY(-50%) since we don't need to center anymore */
         z-index: 40;
         width: 300px;
         height: 600px;
@@ -91,13 +89,207 @@
 
       /* Media query to hide the gutter ad on smaller screens */
       @media (max-width: 1280px) {
-        .left-gutter-ad {
+        .left-gutter-ad, .right-gutter-ad {
           display: none;
         }
-
-        .right-gutter-ad {
-          display: none;
-        }
+      }
+      
+      /* Stylish animations */
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      
+      @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      
+      .animate-fade-in {
+        animation: fadeIn 0.6s ease-in-out forwards;
+      }
+      
+      .animate-slide-up {
+        animation: slideUp 0.6s ease-out forwards;
+      }
+      
+      /* Enhanced styles for modern UI */
+      .l-header {
+        padding: 1rem 0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        position: relative;
+        z-index: 10;
+        animation: fadeIn 0.8s ease-in-out;
+      }
+      
+      .l-header__content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+      
+      .l-header__logo {
+        max-height: 80px;
+        width: auto;
+        transition: transform 0.3s ease;
+      }
+      
+      .l-header__logo:hover {
+        transform: scale(1.02);
+      }
+      
+      .l-header__highlightText {
+        background: linear-gradient(to right, #3b82f6, #2563eb);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-weight: bold;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        margin-left: 1rem;
+        font-size: 1.25rem;
+      }
+      
+      .container {
+        max-width: 900px;
+        width: 100%;
+        padding: 1rem;
+        animation: slideUp 0.6s ease-out;
+      }
+      
+      .container__row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      
+      .container__row--equal > * {
+        flex: 1;
+      }
+      
+      .card {
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        backdrop-filter: blur(8px);
+      }
+      
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      
+      .dark .card {
+        background: rgba(30, 41, 59, 0.85);
+        color: #f1f5f9;
+      }
+      
+      .l-footer {
+        margin-top: auto;
+        padding: 1.5rem 0;
+        background: rgba(30, 41, 59, 0.8);
+        backdrop-filter: blur(8px);
+      }
+      
+      .l-footer__content {
+        display: flex;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        flex-wrap: wrap;
+        gap: 2rem;
+      }
+      
+      .l-footer__col {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      
+      .t-link {
+        color: #e2e8f0;
+        text-decoration: none;
+        transition: color 0.2s ease;
+        display: inline-block;
+        position: relative;
+      }
+      
+      .t-link:after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        transform: scaleX(0);
+        height: 2px;
+        bottom: -4px;
+        left: 0;
+        background-color: #3b82f6;
+        transform-origin: bottom right;
+        transition: transform 0.3s ease-out;
+      }
+      
+      .t-link:hover {
+        color: #3b82f6;
+      }
+      
+      .t-link:hover:after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+      }
+      
+      /* Glow effect for the settings button */
+      #settings-button {
+        transition: all 0.3s ease;
+        border: none;
+        overflow: hidden;
+      }
+      
+      #settings-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px 5px rgba(0, 117, 255, 0.6);
+      }
+      
+      #settings-button:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(0,117,255,0) 70%);
+        transform: scale(0);
+        transition: transform 0.5s;
+        border-radius: 100%;
+      }
+      
+      #settings-button:hover:before {
+        transform: scale(2);
+      }
+      
+      /* New feature badges */
+      .feature-badge {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: linear-gradient(to right, #f59e0b, #d97706);
+        color: white;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        animation: pulse 2s infinite;
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
       }
     </style>
 
@@ -203,7 +395,7 @@
             />
           </g>
         </svg>
-        <div class="l-header__highlightText">v22.0</div>
+        <div class="l-header__highlightText">v23.0</div>
       </div>
     </header>
     <div class="bg-image"></div>
@@ -211,70 +403,86 @@
     <dark-mode-button></dark-mode-button>
     <!-- Main container with responsive padding -->
     <main class="flex justify-center flex-grow">
-      <div class="container pt-12">
-        <o-button
-          id="login-discord"
-          title="Initializing..."
-          disable="true"
-          block
-        ></o-button>
-
-        <o-button
-          id="logout-discord"
-          title="Log out"
-          translationKey="main.log_out"
-          visible="false"
-          block
-        ></o-button>
-
-        <div class="container__row">
-          <flag-input class="w-[20%] md:w-[15%]"></flag-input>
-          <username-input class="w-full"></username-input>
-          <news-button class="mt-3"></news-button>
-        </div>
-        <div></div>
-        <div>
-          <public-lobby class="w-full"></public-lobby>
-        </div>
-        <div class="container__row container__row--equal">
+      <div class="container pt-12 animate-slide-up">
+        <div class="card mb-4">
+          <h2 class="text-xl font-bold mb-4 text-blue-600 dark:text-blue-400">Bienvenue sur OpenFront</h2>
+          <p class="mb-4 text-gray-700 dark:text-gray-300">Conquérez des territoires, formez des alliances et dominez vos adversaires dans ce jeu de stratégie en temps réel.</p>
+          
           <o-button
-            id="host-lobby-button"
-            title="Create Lobby"
-            translationKey="main.create_lobby"
+            id="login-discord"
+            title="Initializing..."
+            disable="true"
             block
-            secondary
           ></o-button>
+
           <o-button
-            id="join-private-lobby-button"
-            title="Join Lobby"
-            translationKey="main.join_lobby"
+            id="logout-discord"
+            title="Log out"
+            translationKey="main.log_out"
+            visible="false"
             block
-            secondary
           ></o-button>
-          <!-- <o-button
-            id="chat-button"
-            title="Chat Test"
-            block
-            secondary
-          ></o-button> -->
         </div>
 
-        <o-button
-          id="single-player"
-          title="Single Player"
-          translationKey="main.single_player"
-          block
-        ></o-button>
+        <div class="card mb-4">
+          <div class="container__row">
+            <flag-input class="w-[20%] md:w-[15%]"></flag-input>
+            <username-input class="w-full"></username-input>
+            <news-button class="mt-3"></news-button>
+          </div>
+          
+          <div class="mt-4">
+            <public-lobby class="w-full"></public-lobby>
+          </div>
+        </div>
 
-        <o-button
-          id="help-button"
-          title="Instructions"
-          translationKey="main.instructions"
-          block
-          secondary
-        ></o-button>
-        <div class="container__row">
-          <lang-selector class="w-full"></lang-selector>
+        <div class="card mb-4">
+          <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">Modes de jeu</h3>
+          <div class="container__row container__row--equal">
+            <div class="relative">
+              <o-button
+                id="host-lobby-button"
+                title="Create Lobby"
+                translationKey="main.create_lobby"
+                block
+                secondary
+              ></o-button>
+            </div>
+            <o-button
+              id="join-private-lobby-button"
+              title="Join Lobby"
+              translationKey="main.join_lobby"
+              block
+              secondary
+            ></o-button>
+          </div>
+
+          <div class="mt-4 relative">
+            <o-button
+              id="single-player"
+              title="Single Player"
+              translationKey="main.single_player"
+              block
+            ></o-button>
+            <span class="feature-badge">New Maps!</span>
+          </div>
+
+          <div class="mt-4">
+            <o-button
+              id="help-button"
+              title="Instructions"
+              translationKey="main.instructions"
+              block
+              secondary
+            ></o-button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-200">Options</h3>
+          <div class="container__row">
+            <lang-selector class="w-full"></lang-selector>
+          </div>
         </div>
       </div>
     </main>

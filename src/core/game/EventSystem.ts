@@ -304,3 +304,46 @@ export class MilitaryUprisalEffect extends BaseEventEffect {
     return true;
   }
 }
+
+export class ScientificBreakthroughEffect extends BaseEventEffect {
+  public apply(game: Game, player: Player, params?: any): boolean {
+    // Si le système de technologies est implémenté, débloquer une technologie aléatoire
+    const techManager = (player as any).technologies;
+    if (techManager) {
+      const availableTechs = techManager.getAllProgressions()
+        .filter(prog => prog.status === "Available");
+      
+      if (availableTechs.length > 0) {
+        // Choisir une technologie aléatoire
+        const randomIndex = Math.floor(Math.random() * availableTechs.length);
+        const techToComplete = availableTechs[randomIndex];
+        
+        // Compléter la recherche
+        techManager.startResearch(techToComplete.technologyId, game.ticks());
+        techManager.completeResearch(techToComplete.technologyId);
+        
+        // Créer un message pour le joueur
+        game.displayMessage(
+          `Une percée scientifique a permis à vos chercheurs de développer la technologie "${techToComplete.technologyId}" immédiatement!`,
+          MessageType.SUCCESS,
+          player.id()
+        );
+        
+        return true;
+      }
+    }
+    
+    // Si pas de système de technologies ou pas de technologies disponibles, donner un bonus d'or
+    const goldBonus = 200;
+    player.addGold(goldBonus);
+    
+    // Créer un message pour le joueur
+    game.displayMessage(
+      `Une percée scientifique a permis à vos chercheurs de faire une découverte importante! Vous recevez ${goldBonus} d'or.`,
+      MessageType.SUCCESS,
+      player.id()
+    );
+    
+    return true;
+  }
+}

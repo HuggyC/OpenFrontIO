@@ -248,3 +248,59 @@ export class RebellionEffect extends BaseEventEffect {
     return true;
   }
 }
+
+export class EconomicBoomEffect extends BaseEventEffect {
+  public apply(game: Game, player: Player, params?: any): boolean {
+    const goldBoost = params?.goldBoost || this.params.goldBoost || 0.2; // 20% de bonus d'or
+    const productionBoost = params?.productionBoost || this.params.productionBoost || 0.15; // 15% de boost de production
+    
+    // Obtenir le gestionnaire de ressources du joueur
+    const resourceManager = (player as any).resources;
+    if (!resourceManager) {
+      return false;
+    }
+    
+    // Augmenter l'or
+    const goldToAdd = Math.floor(player.gold() * goldBoost);
+    player.addGold(goldToAdd);
+    
+    // Augmenter les multiplicateurs de production de ressources
+    for (const resourceType of Object.values(ResourceType)) {
+      const currentMultiplier = resourceManager.getProductionMultiplier(resourceType);
+      resourceManager.setProductionMultiplier(resourceType, currentMultiplier * (1 + productionBoost));
+    }
+    
+    // Créer un message pour le joueur
+    game.displayMessage(
+      `Votre économie connaît un boom! Vous recevez ${goldToAdd} d'or et votre production de ressources augmente de ${productionBoost * 100}%.`,
+      MessageType.SUCCESS,
+      player.id()
+    );
+    
+    return true;
+  }
+}
+
+export class MilitaryUprisalEffect extends BaseEventEffect {
+  public apply(game: Game, player: Player, params?: any): boolean {
+    const troopBoost = params?.troopBoost || this.params.troopBoost || 0.25; // 25% de troupes en plus
+    
+    // Calculer le nombre de troupes à ajouter
+    const troopsToAdd = Math.floor(player.troops() * troopBoost);
+    if (troopsToAdd <= 0) {
+      return false;
+    }
+    
+    // Ajouter les troupes
+    player.addTroops(troopsToAdd);
+    
+    // Créer un message pour le joueur
+    game.displayMessage(
+      `Vos forces militaires ont reçu un regain de popularité! ${troopsToAdd} nouvelles recrues ont rejoint votre armée.`,
+      MessageType.SUCCESS,
+      player.id()
+    );
+    
+    return true;
+  }
+}

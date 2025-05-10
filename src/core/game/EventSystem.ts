@@ -485,5 +485,229 @@ export const availableEvents: GameEvent[] = [
     affectedPlayers: "single",
     effect: new NaturalDisasterEffect({ disasterType: "wildfire", affectedTilesCount: 4 }),
     notificationMessage: "Un feu de forêt ravage une partie de votre territoire!"
+  },
+  
+  // Découvertes de ressources
+  {
+    id: "gold-discovery",
+    type: EventType.ResourceDiscovery,
+    category: EventCategory.Economic,
+    name: "Découverte d'or",
+    description: "Vos explorateurs ont découvert un gisement d'or dans votre territoire.",
+    probability: 0.05,
+    minTicksInterval: 40,
+    affectedPlayers: "single",
+    effect: new ResourceDiscoveryEffect({ resourceType: ResourceType.Gold, amount: 150 }),
+    notificationMessage: "De l'or a été découvert dans votre territoire!"
+  },
+  {
+    id: "luxury-discovery",
+    type: EventType.ResourceDiscovery,
+    category: EventCategory.Economic,
+    name: "Découverte de ressources de luxe",
+    description: "Une ressource de luxe rare a été découverte dans votre territoire.",
+    probability: 0.03,
+    minTicksInterval: 60,
+    affectedPlayers: "single",
+    effect: new ResourceDiscoveryEffect({ resourceType: ResourceType.Luxury, amount: 50 }),
+    notificationMessage: "Une ressource de luxe a été découverte dans votre territoire!"
+  },
+  {
+    id: "energy-discovery",
+    type: EventType.ResourceDiscovery,
+    category: EventCategory.Economic,
+    name: "Découverte de sources d'énergie",
+    description: "Vos scientifiques ont découvert une nouvelle source d'énergie exploitable.",
+    probability: 0.025,
+    minTicksInterval: 80,
+    affectedPlayers: "single",
+    effect: new ResourceDiscoveryEffect({ resourceType: ResourceType.Energy, amount: 100 }),
+    notificationMessage: "Une nouvelle source d'énergie a été découverte!"
+  },
+  
+  // Événements politiques
+  {
+    id: "rebellion",
+    type: EventType.Rebellion,
+    category: EventCategory.Political,
+    name: "Rébellion",
+    description: "Une partie de votre population se révolte contre votre autorité.",
+    probability: 0.015,
+    minTicksInterval: 100,
+    affectedPlayers: "single",
+    // Les rébellions sont plus probables dans les grands empires
+    condition: (game, player) => player.tiles().size > 20,
+    effect: new RebellionEffect({ rebellionSize: 0.15, troopsLost: 0.1 }),
+    notificationMessage: "Une rébellion a éclaté dans votre territoire!"
+  },
+  {
+    id: "major-rebellion",
+    type: EventType.Rebellion,
+    category: EventCategory.Political,
+    name: "Rébellion majeure",
+    description: "Une rébellion majeure éclate dans votre empire, menaçant votre autorité.",
+    probability: 0.008,
+    minTicksInterval: 150,
+    affectedPlayers: "single",
+    // Les grandes rébellions sont plus probables dans les très grands empires
+    condition: (game, player) => player.tiles().size > 50,
+    effect: new RebellionEffect({ rebellionSize: 0.25, troopsLost: 0.2 }),
+    notificationMessage: "Une rébellion majeure menace votre empire!"
+  },
+  
+  // Événements économiques
+  {
+    id: "economic-boom",
+    type: EventType.EconomicBoom,
+    category: EventCategory.Economic,
+    name: "Boom économique",
+    description: "Votre économie connaît une période de croissance exceptionnelle.",
+    probability: 0.04,
+    minTicksInterval: 60,
+    affectedPlayers: "single",
+    effect: new EconomicBoomEffect({ goldBoost: 0.2, productionBoost: 0.15 }),
+    notificationMessage: "Votre économie connaît un boom!"
+  },
+  {
+    id: "economic-crisis",
+    type: EventType.EconomicCrisis,
+    category: EventCategory.Economic,
+    name: "Crise économique",
+    description: "Une crise économique frappe votre territoire, réduisant votre revenu.",
+    probability: 0.03,
+    minTicksInterval: 80,
+    affectedPlayers: "single",
+    effect: new EconomicBoomEffect({ goldBoost: -0.15, productionBoost: -0.1 }), // Valeurs négatives pour simuler une crise
+    notificationMessage: "Une crise économique frappe votre économie!"
+  },
+  
+  // Événements militaires
+  {
+    id: "military-uprisal",
+    type: EventType.MilitaryUprisal,
+    category: EventCategory.Military,
+    name: "Regain militaire",
+    description: "Votre armée connaît un regain de popularité, attirant de nouvelles recrues.",
+    probability: 0.035,
+    minTicksInterval: 50,
+    affectedPlayers: "single",
+    effect: new MilitaryUprisalEffect({ troopBoost: 0.2 }),
+    notificationMessage: "Un grand nombre de recrues rejoignent votre armée!"
+  },
+  
+  // Événements spéciaux
+  {
+    id: "scientific-breakthrough",
+    type: EventType.ScientificBreakthrough,
+    category: EventCategory.Special,
+    name: "Percée scientifique",
+    description: "Vos scientifiques font une découverte majeure qui accélère votre développement technologique.",
+    probability: 0.02,
+    minTicksInterval: 100,
+    affectedPlayers: "single",
+    effect: new ScientificBreakthroughEffect(),
+    notificationMessage: "Vos scientifiques ont fait une percée majeure!"
+  },
+  {
+    id: "pandemic",
+    type: EventType.Pandemic,
+    category: EventCategory.Special,
+    name: "Pandémie",
+    description: "Une maladie contagieuse se propage dans votre population, réduisant la production.",
+    probability: 0.01,
+    minTicksInterval: 200,
+    affectedPlayers: "multiple", // Peut affecter plusieurs joueurs
+    effect: new PandemicEffect({ populationLoss: 0.1, productionReduction: 0.15 }),
+    notificationMessage: "Une pandémie frappe votre population!"
+  },
+  {
+    id: "alien-contact",
+    type: EventType.AlienContact,
+    category: EventCategory.Special,
+    name: "Contact extraterrestre",
+    description: "Des visiteurs d'une autre planète entrent en contact avec votre civilisation.",
+    probability: 0.001, // Très rare (0.1%)
+    minTicksInterval: 500, // Très long intervalle
+    affectedPlayers: "single",
+    effect: new AlienContactEffect(),
+    notificationMessage: "Des visiteurs extraterrestres ont contacté votre civilisation!"
   }
 ];
+
+// Gestionnaire d'événements pour le jeu
+export class EventManager {
+  private lastEventTicks: Map<string, Map<PlayerID, Tick>> = new Map();
+  private originalProbabilities: Map<string, number> = new Map();
+  
+  constructor(private game: Game) {
+    // Initialiser le suivi des événements
+    for (const event of availableEvents) {
+      this.lastEventTicks.set(event.id, new Map());
+      this.originalProbabilities.set(event.id, event.probability);
+    }
+  }
+  
+  // Mettre à jour et déclencher des événements
+  public update(currentTick: Tick): void {
+    const players = this.game.players();
+    
+    // Pour chaque événement
+    for (const event of availableEvents) {
+      // Déterminer quels joueurs peuvent être affectés
+      let eligiblePlayers: Player[] = [];
+      
+      switch (event.affectedPlayers) {
+        case "single":
+          // Choisir un joueur aléatoire qui répond aux conditions
+          eligiblePlayers = players
+            .filter(player => this.isPlayerEligibleForEvent(player, event, currentTick))
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 1);
+          break;
+        case "multiple":
+          // Choisir plusieurs joueurs qui répondent aux conditions (jusqu'à la moitié)
+          const maxAffected = Math.max(1, Math.floor(players.length / 2));
+          eligiblePlayers = players
+            .filter(player => this.isPlayerEligibleForEvent(player, event, currentTick))
+            .sort(() => Math.random() - 0.5)
+            .slice(0, maxAffected);
+          break;
+        case "all":
+          // Tous les joueurs qui répondent aux conditions
+          eligiblePlayers = players
+            .filter(player => this.isPlayerEligibleForEvent(player, event, currentTick));
+          break;
+      }
+      
+      // Pour chaque joueur éligible
+      for (const player of eligiblePlayers) {
+        // Vérifier la probabilité de l'événement
+        if (Math.random() < event.probability) {
+          // Déclencher l'événement
+          const success = event.effect.apply(this.game, player);
+          
+          if (success) {
+            // Enregistrer le tick de l'événement
+            const playerEvents = this.lastEventTicks.get(event.id);
+            if (playerEvents) {
+              playerEvents.set(player.id(), currentTick);
+            }
+            
+            // Notifier le joueur
+            this.game.displayMessage(
+              event.notificationMessage,
+              MessageType.INFO,
+              player.id()
+            );
+          }
+        }
+      }
+    }
+  }
+  
+  // Vérifier si un joueur est éligible pour un événement
+  private isPlayerEligibleForEvent(player: Player, event: GameEvent, currentTick: Tick): boolean {
+    // Vérifier si le joueur est en vie
+    if (!player.isAlive()) {
+      return false;
+    }

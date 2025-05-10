@@ -347,3 +347,143 @@ export class ScientificBreakthroughEffect extends BaseEventEffect {
     return true;
   }
 }
+
+export class PandemicEffect extends BaseEventEffect {
+  public apply(game: Game, player: Player, params?: any): boolean {
+    const populationLoss = params?.populationLoss || this.params.populationLoss || 0.15; // 15% de la population
+    const productionReduction = params?.productionReduction || this.params.productionReduction || 0.2; // 20% de réduction de production
+    
+    // Réduire la population
+    // À adapter selon l'implémentation du système de population
+    
+    // Obtenir le gestionnaire de ressources du joueur
+    const resourceManager = (player as any).resources;
+    if (resourceManager) {
+      // Réduire les multiplicateurs de production de ressources
+      for (const resourceType of Object.values(ResourceType)) {
+        const currentMultiplier = resourceManager.getProductionMultiplier(resourceType);
+        resourceManager.setProductionMultiplier(
+          resourceType,
+          currentMultiplier * (1 - productionReduction)
+        );
+      }
+    }
+    
+    // Créer un message pour le joueur
+    game.displayMessage(
+      `Une pandémie frappe votre population! Votre production de ressources est réduite de ${productionReduction * 100}%.`,
+      MessageType.WARN,
+      player.id()
+    );
+    
+    return true;
+  }
+}
+
+export class AlienContactEffect extends BaseEventEffect {
+  public apply(game: Game, player: Player, params?: any): boolean {
+    // Cet événement humoristique et rare donne un bonus aléatoire important
+    const effect = Math.floor(Math.random() * 4);
+    
+    switch (effect) {
+      case 0:
+        // Gros bonus d'or
+        const goldBonus = 500;
+        player.addGold(goldBonus);
+        game.displayMessage(
+          `Des visiteurs extraterrestres ont été impressionnés par votre civilisation et vous ont offert ${goldBonus} d'or!`,
+          MessageType.SUCCESS,
+          player.id()
+        );
+        break;
+      case 1:
+        // Beaucoup de troupes
+        const troopsBonus = 200;
+        player.addTroops(troopsBonus);
+        game.displayMessage(
+          `Des mercenaires extraterrestres ont décidé de rejoindre votre armée! Vous gagnez ${troopsBonus} troupes.`,
+          MessageType.SUCCESS,
+          player.id()
+        );
+        break;
+      case 2:
+        // Technologie avancée
+        // À adapter selon l'implémentation du système de technologies
+        game.displayMessage(
+          `Des extraterrestres vous ont révélé des secrets technologiques avancés! Votre recherche progresse plus rapidement.`,
+          MessageType.SUCCESS,
+          player.id()
+        );
+        break;
+      case 3:
+        // Ressources rares
+        const resourceManager = (player as any).resources;
+        if (resourceManager) {
+          resourceManager.addResource(ResourceType.Energy, 200);
+          resourceManager.addResource(ResourceType.Luxury, 100);
+          game.displayMessage(
+            `Des extraterrestres ont effectué des échanges commerciaux avec vous! Vous recevez des ressources rares.`,
+            MessageType.SUCCESS,
+            player.id()
+          );
+        } else {
+          // Fallback
+          player.addGold(400);
+          game.displayMessage(
+            `Des extraterrestres ont effectué des échanges commerciaux avec vous! Vous recevez 400 d'or.`,
+            MessageType.SUCCESS,
+            player.id()
+          );
+        }
+        break;
+    }
+    
+    return true;
+  }
+}
+
+// Définition des événements disponibles
+export const availableEvents: GameEvent[] = [
+  // Catastrophes naturelles
+  {
+    id: "earthquake",
+    type: EventType.NaturalDisaster,
+    category: EventCategory.Natural,
+    name: "Tremblement de terre",
+    description: "Un tremblement de terre frappe votre territoire, détruisant des bâtiments et infrastructures.",
+    probability: 0.03, // 3% de chance par tick
+    minTicksInterval: 50, // Au moins 50 ticks entre deux occurrences
+    affectedPlayers: "single",
+    effect: new NaturalDisasterEffect({ disasterType: "earthquake", affectedTilesCount: 3 }),
+    notificationMessage: "Un tremblement de terre a frappé votre territoire!"
+  },
+  {
+    id: "flood",
+    type: EventType.NaturalDisaster,
+    category: EventCategory.Natural,
+    name: "Inondation",
+    description: "Une inondation recouvre une partie de votre territoire, réduisant la production.",
+    probability: 0.025,
+    minTicksInterval: 60,
+    affectedPlayers: "single",
+    condition: (game, player) => {
+      // Les inondations sont plus probables près des lacs et océans
+      // À adapter selon l'implémentation des terrains
+      return true;
+    },
+    effect: new NaturalDisasterEffect({ disasterType: "flood", affectedTilesCount: 5 }),
+    notificationMessage: "Une inondation a submergé une partie de votre territoire!"
+  },
+  {
+    id: "wildfire",
+    type: EventType.NaturalDisaster,
+    category: EventCategory.Natural,
+    name: "Feu de forêt",
+    description: "Un feu de forêt se propage dans votre territoire, détruisant des ressources et bâtiments.",
+    probability: 0.02,
+    minTicksInterval: 70,
+    affectedPlayers: "single",
+    effect: new NaturalDisasterEffect({ disasterType: "wildfire", affectedTilesCount: 4 }),
+    notificationMessage: "Un feu de forêt ravage une partie de votre territoire!"
+  }
+];
